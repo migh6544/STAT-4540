@@ -1,0 +1,133 @@
+---
+title: '[STAT 4540] HW-1 / Michael Ghattas'
+author: "Michael Ghattas"
+date: "1/26/2022"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Problem 1
+
+### a)
+
+$X_t = \{X_1, X_2, X_3\}$ \
+
+$\{X_1, X_2, X_3\} \to independent$ \
+
+$X_1 \sim Poisson(1, 2)$ \
+
+$X_2 \sim Expo(1, 0.5)$ \
+
+$X_3 \sim \Gamma(1, 0.1)$ \
+
+### b)
+
+$X_t \sim^{iid} Normal(0, 1)$ $\forall t$ \
+
+$t = \{0, \infty\}$ \
+
+
+# Problem 2
+
+### a)
+
+```{r}
+set.seed(1)
+
+
+
+U_1 <- rnorm(1,0,1)
+U_2 <- rnorm(1,0,1)
+U_3 <- rnorm(1,0,1)
+U <- c(U_1, U_2, U_3)
+
+
+V_1 <- rnorm(1,0,1)
+V_2 <- rnorm(1,0,1)
+V_3 <- rnorm(1,0,1)
+V <- c(V_1, V_2, V_3)
+
+
+t <- seq(0, (2 * pi), by = 0.01)
+
+
+y_1 <- ((U_1 * sin(t)) + (V_1 * cos(t)))
+y_2 <- ((U_2 * sin(t)) + (V_2 * cos(t)))
+y_3 <- ((U_3 * sin(t)) + (V_3 * cos(t)))
+Y <- c(y_1, y_2, y_3)
+
+
+
+plot(t, y_1, ylim = c(-(2 * pi), (2 * pi)), type = 'l')
+points(t , y_2, col = "red", pch = ".")
+points(t, y_3, col = "blue", pch = ".")
+```
+
+### b)
+
+##### Using the given information:
+
+$E[X_t] = E[U] * \sin{(t)} + E[V] * \cos{(t)} = 0$ \
+
+$E[X_s] = E[U] * \sin{(s)} + E[V] * \cos{(s)} = 0$ \
+
+We will test if $E[X_t, X_s] = E[X_{t + h} \cdot X_{s + h}]$ $\forall (h)$ & $\forall (t, s)$: \
+$E[X_t \cdot X_s] = (E[U] * \sin{(t)} + E[V] * \cos{(t)}) * (E[U] * \sin{(s)} + E[V] * \cos{(s)})$ \
+                 $= (U * \sin{(t)} * U \sin{(s)}) + (U * \sin{(t)} * V * \cos{(s)}) + (V * \cos{(t)} * U * \sin{(s)}) + (V * \cos{(t)} * V * \cos{(s)})$ \
+                 $= U^2 \cdot \sin{(t)}\sin{(s)}) + UV \cdot \sin{(t)}\cos{(s)} + UV \cdot \cos{(t)}\sin{(s)}) + V^2 \cdot \cos{(t)}\cos{(s)})$ \
+                 $= 0.5U^2\sin{0.5(t + s)}\sin{0.5(t - s)} + 0.5V^2\cos{0.5(t + s)}\cos{0.5(t - s)}) + UV\sin{(t + s)}$ \
+
+Since the ACVF will not be only dependent on $(t - s)$, $\{X_t\}$ is NOT weakly stationary! \
+
+
+
+# Problem 3
+
+### a
+
+Since $Y_0 = 0$ is a provided condition, this is not a standard condition of a n AR(1) model. This means we set a limitation on the starting point of the series. \
+
+
+### b
+
+$y_t = \phi \cdot y_{t - 1} + z_t$ \
+
+$E[y_t] = E[\phi \cdot y_{t - 1} + z_t] = \phi \cdot E[y_{t - 1}] + E[z_t] = \phi \cdot \mu + 0 = \phi \cdot \mu$ \
+
+$\mu = \phi\mu$ \
+
+$\mu - \phi\mu = 0$ \
+
+$\mu \cdot (1 - \phi) = 0$ \
+
+$\mu = 0$ \
+
+$E[y_t] = \mu = 0$ \
+
+### c
+
+$Var[y_t] = E[y_{t - 1}^{2}] - E[y_t]^2 = E[y_{t - 1}^{2}] - 0^2 = E[(\phi \cdot y_{t - 1} + z_t)^2] - 0$ \
+         $= E[(\phi y_{t - 1})^2 + 2 \cdot \phi y_{t - 1} \cdot z_1 + z^2] = E[(\phi)^2] \cdot E[(y_{t - 1})^2] + 2\phi(0)(0) + 0^2]$ \
+         $= \phi^2E[(y_{t - 1})^2] + 0 + 0 = \phi^2E[(0)^2] = \phi^2(0) = 0$ \
+
+### d
+
+##### Using the information we have so far:
+
+1. $E[y_t] = \mu = 0$ \
+
+2. $Var[y_t] = 0 \to \sigma = 0$ \
+
+3. $E[y_t, y_s] = E[y_{t + h} \cdot y_{s + h}] = E[y_0y_{s - t}$, where $(h = -t)$ \
+
+   $E[y_t \cdot y_s] = 0$, given $(y_0 = 0)$ \
+   
+Thus, $\{y_t\}$ is weakly stationary! \
+
+
+# END.

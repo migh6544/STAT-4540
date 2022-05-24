@@ -1,0 +1,183 @@
+\RequirePackage[l2tabu, orthodox]{nag}
+\documentclass[10pt, letterpaper]{scrartcl}
+
+\usepackage{amssymb,amsfonts}
+\usepackage[cmex10]{amsmath}
+\usepackage[usenames,dvipsnames,svgnames]{xcolor}
+\usepackage{graphicx}
+\usepackage[margin=1in]{geometry}
+
+
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern} % important!
+
+\usepackage{hyperref}
+\hypersetup{pdfauthor={Stephen Becker},
+    pdftitle={},
+    colorlinks=true,
+    citecolor=MidnightBlue,
+    urlcolor=Bittersweet,
+}
+% -- Input macros and such --
+
+\let\oldenumerate\enumerate
+\renewcommand{\enumerate}{
+  \oldenumerate
+  \setlength{\itemsep}{1em}
+  \setlength{\parskip}{1em}
+  \setlength{\parsep}{0pt}
+}
+%\usepackage{enumitem}
+\usepackage[shortlabels]{enumitem} % allows shorthand notation for labels
+%\setlist{noitemsep}
+% See http://mirrors.fe.up.pt/pub/CTAN/macros/latex/contrib/enumitem/enumitem.pdf
+% and now, set par indent to zero
+\newlength{\savedparindent}
+\setlength{\savedparindent}{\parindent}
+\setlist[enumerate]{listparindent=\savedparindent}
+
+\usepackage{xspace}
+
+
+
+% My solution environment
+\makeatletter
+\newcommand\solParagraph{\@startsection{paragraph}{4}{\z@}%
+    {-.55ex \@plus -1ex \@minus -0.2ex}%
+    {0.01pt}%
+    {\raggedsection\normalfont\sectfont\nobreak\size@paragraph}%
+}
+\makeatother
+\newenvironment{solution}{\setlength{\parindent}{\savedparindent}\solParagraph{Solution:}}{}
+
+\newenvironment{instructions}{}{}
+\newenvironment{SolnComment}{}{}
+\usepackage{comment} 
+
+% EDIT THIS TO ENABLE SOLUTIONS:
+%\def\solutions{1}  % define solutions  % !!! COMMENT or UNCOMMENT THIS LINE
+
+% NOTE: \begin{solution} should have NO SPACES BEFORE OR AFTER IT,
+% 	Can give very weird errors, hiding text, etc. See http://tex.stackexchange.com/a/91431/4603
+\ifdefined\solutions
+    \newcommand{\solTitle}[1]{#1}
+    \excludecomment{instructions}
+    \usepackage{draftwatermark}
+\SetWatermarkText{\textcopyright 2022 Stephen Becker}
+\SetWatermarkScale{0.5}    \SetWatermarkLightness{0.920}
+\else
+   \excludecomment{solution}% uncomment this line to hide solution
+   \newcommand{\solTitle}[1]{}
+   \excludecomment{SolnComment}
+\fi
+
+
+% -- Macros --
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\cN}{\mathcal{N}} % for normal distribution
+\newcommand{\real}{\mathbb{R}}
+\newcommand{\integers}{\mathbb{Z}}
+\newcommand{\WN}{\text{WN}}
+\newcommand{\cov}{\text{Cov}}
+\newcommand{\Cov}{\text{Cov}}
+\newcommand{\var}{\text{Var}}
+\newcommand{\Var}{\text{Var}}
+
+\title{Homework 1 \solTitle{Selected Solutions} \\MATH/STAT 4540/5540 Spr 2022 Time Series}
+\date{}
+\begin{document}
+\maketitle
+\vspace{-6em}
+\textbf{\sffamily Due date}: Friday, Jan 28, before midnight, on Canvas/Gradescope
+\hfill \textbf{\sffamily Instructor}: Prof.\ Becker
+
+\textbf{\sffamily Theme}: Intro to stationary processes
+
+\begin{SolnComment}
+    \hfill {\em \small    solutions version 1/21/2022}
+\end{SolnComment}
+
+\begin{instructions} % Normal indents inside this environment
+\paragraph{Instructions} 
+Collaboration with your fellow students is OK and in fact recommended, although direct copying is not allowed. The internet is allowed for basic tasks (e.g., looking up definitions on wikipedia) but it is not permissible to search for proofs or to \emph{post} requests for help on forums such as \texttt{http://math.stackexchange.com/} or to look at solution manuals. Please write down the names of the students that you worked with.
+
+An arbitrary subset of these questions will be graded.
+\vspace{-1em}
+\paragraph{Reading} 
+You are responsible for chapters 1 in our textbook (Brockwell and Davis, ``Intro to Time Series and Forecasting'', 3rd ed).
+\end{instructions}
+
+
+\begin{enumerate}[align=left, leftmargin=*, label=\sffamily\bfseries Problem \arabic*:]    
+
+% === Problem: from Will 2018
+\item For this problem, \textbf{do not use the internet at all}. 
+Give one explicit example of a stochastic process $\{ X_t : t \in \Z\}$ that is 
+\begin{enumerate}
+\item weakly stationary but not strictly stationary.
+\item strictly stationary but not weakly stationary.
+
+\end{enumerate}
+  
+
+\item 
+Consider the continuous-time process
+\begin{align*}
+  X(t) = U \sin t + V \cos t, \qquad t\in\real
+\end{align*}
+where $U$ and $V$ are independent random variables, each with mean zero 
+and variance 1.
+\begin{enumerate}
+  \item
+    What do the realizations of this process look like?  Sketch three different 
+    sample paths on $[0,2\pi]$, and explain observed behavior.
+  \item
+    Is $\{X(t):t\in\real\}$ a weakly stationary process? Justify your answer. {\em Hint: you can use trig identities you find in a book or on the internet}.
+\item
+    (Optional, more difficult) Is $\{X(t):t\in\real\}$ a strictly 
+    stationary process? Justify your answer.
+\end{enumerate}
+
+
+
+\item \textbf{\sffamily Pseudo AR(1) model}  Suppose that $Y_t=\phi\cdot Y_{t-1}+Z_t$, for $t\in\Z$, $t\ge0$, where:
+\begin{itemize}
+\item $Y_0=0$
+\item $|\phi|<1$;
+\item $\{Z_t\}\sim\WN(0,\sigma^2)$.
+\end{itemize}
+\begin{enumerate}
+\item Explain why this is not a \emph{standard} AR(1) model
+
+\item Determine $\E[Y_t]$ for each $t\in\mathbb{Z}$.
+
+
+\item Determine $\var[Y_t]$ for every $t\in \Z$.
+
+\item Is $\{Y_t\}$ weakly stationary? Explain!
+
+
+\item (\textbf{\sffamily Graduate students only}) Determine $\cov(Y_{t-h},Y_t)$ for each $0\le h\le t$.
+
+
+\end{enumerate}
+
+
+
+
+\item  (\textbf{\sffamily Graduate students only})
+Suppose $\{X(t):t\in\integers\}$ is a sequence of iid random variables with 
+mean zero and variance $\sigma^2$.  Define the weighted partial sum process 
+\[
+  S(n) = \sum_{t=1}^n w_t X(t)
+\]
+for some real-valued weights $w_1,w_2,\ldots$.  Under what conditions 
+on $\{w_t\}$ will $\{S(n)\}$ be weakly stationary?
+
+
+
+\end{enumerate}
+\end{document}

@@ -1,0 +1,84 @@
+---
+title: '[STAT 4540] Exam-2'
+author: "Michael Ghattas"
+date: "4/3/2022"
+output:
+  html_document: default
+  word_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Problem 1
+
+```{r}
+library(itsmr) 
+
+df <- load("/Users/Home/Documents/Michael_Ghattas/School/CU_Boulder/2022/Spring 2022/STAT - 4540/Exams/2/Exam2data.RData");
+```
+
+```{r}
+dat <- data.frame(x = x)
+x = dat[, 1]
+
+mean(x)
+sd(x)
+plot(x)
+
+acf(x)
+acf(x, lag.max = 500)
+```
+
+```{r}
+X <- ts(data = dat, start = c(1,1), end = c(500,1), frequency = 5)
+out <- decompose(x = X, type = "additive")
+decomposed <- stl( X, s.window = "periodic" )
+
+plot(decomposed)
+plot(out)
+```
+
+
+```{r}
+plot(out$seasonal[1:50], type = "b")
+acf(out$seasonal, na.action = na.pass)
+
+plot(out$trend[1:50], type = "b")
+acf(out$trend, na.action = na.pass)
+
+plot(out$random[1:50], type = "b")
+acf(out$random, na.action = na.pass)
+```
+
+```{r}
+x<- as.matrix(dat); dim(x)
+cos.c <- rep(cos(3 * pi * 1:500 / 500), 1)
+c1 <- as.matrix(cos.c); dim(c1)
+sin.c <- rep(sin(3 * pi * 1:500 / 500), 1)
+s1 <- as.matrix(sin.c); dim(s1)
+cos.c2 <- rep(cos(5 * pi * 1:500 / 500), 1)
+c2 <- as.matrix(cos.c2); dim(c2)
+sin.c2 <- rep(sin(5 * pi * 1:500 / 500), 1)
+s2 <- as.matrix(sin.c2); dim(s2)
+data <- data.frame(cbind(x, c1, s1, c2, s2))
+
+fit <- lm(x ~ c1 + s1 + c2 + s2, data = data)
+
+summary(fit)
+coef(fit)
+
+plot(x, type = "p", col = gray(0, .5))
+lines(fit$fitted, col = "red", lwd = 3)
+lines(out$trend, col = "green", lwd = 1)
+lines(out$seasonal, col = "blue", lwd = 0.1)
+lines(out$random, col = "blue", lwd = 0.1)
+
+resid <- fit$resid
+plot(resid, type = "l")
+acf(resid)
+```
+
+##### I do not believe the data is white noise, as we can see that there is correlation in the points once we set the max lag to 500. Additionally the data seems to indicate that there is a none stationary trend and seasonality imbeded within the random part of the data. Once the trend/seasonal elements have been removed, further examination of the residuals is needed.

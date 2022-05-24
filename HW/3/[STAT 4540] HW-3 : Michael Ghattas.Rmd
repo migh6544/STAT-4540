@@ -1,0 +1,142 @@
+---
+title: '[STAT 4540] HW-3'
+author: "Michael Ghattas"
+date: "3/2/2022"
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Problem 1
+
+```{r}
+library(lubridate)
+library(gridExtra)
+library(ggplot2)
+library(dplyr)
+
+df <- load("/Users/Home/Documents/Michael_Ghattas/School/CU_Boulder/2022/Spring 2022/STAT - 4540/HW/3/CO-GHCND-TN-TX.RData");
+cityIndex = 125;
+dat <- data.frame(mo = mo[yr %in% c(1900:2010)], da = da[yr %in% c(1900:2010)], yr = yr[yr %in% c(1900:2010)], temp = TN[yr %in% c(1900:2010), cityIndex]);
+agg = aggregate(temp ~ mo + yr, dat, mean);
+```
+
+### (a)
+
+```{r}
+cos.c <- cos(2 * pi * agg$mo / 12);
+sin.c <- sin(2 * pi *  agg$mo / 12);
+fit <- lm(temp ~  poly(1:length(agg$temp), degree = 1) + cos.c + sin.c, data = agg);
+
+summary(fit);
+coef(fit);
+```
+
+### (b)
+
+```{r}
+m <- vector(mode = "list", length = 12);
+for (i in 1:12 )
+{
+  m[[i]] = ifelse( agg$mo == i, 1, 0);
+}
+agg$date <- as.Date(make_datetime(year = agg$yr, month = agg$mo));
+agg$Date <- decimal_date(agg$date);
+
+lmod <- lm(temp ~ Date + m[[1]] + m[[2]] + m[[3]] + m [[4]] + m[[5]] + m[[6]] + m[[7]] + m[[8]] + m[[9]] + m[[10]] + m[[11]] + m[[12]], data = agg);
+summary(lmod)
+```
+
+### (c)
+
+```{r}
+plot(agg$temp ~ agg$Date, xlab = "Date", ylab = "Temperature", xlim = c(1900, 1902), ylim = c(-20,20));
+lines(fit$fitted ~ agg$Date, col = "red", type = "l", pch = 20, lw = 3);
+lines(lmod$fitted ~ agg$Date, col = "blue", type = "l", pch = 20, lw = 3)
+```
+
+### (d)
+
+```{r}
+acf(residuals(fit), lar.max = 2);
+acf(residuals(lmod), lar.max = 2)
+```
+
+##### Both moddels are very similar, though we can see the Sinusodial model has more correlation than the Dummy model. Thus we can say that the Dunny model is slightly better.
+
+# Problem 2
+
+$X_{t} - \phi \cdot X_{t - 1} = Z_{t} + \theta \cdot Z_{t - 1}$, and assume that $|\phi| < 1$, then our ARMA(1, 1) {$X_{t}$} process is causal. \
+Thus: $X_{t} = Z_{t} + (\phi + \theta)\cdot \sum_{j = 1}^{\infty} \phi^{j - 1} \cdot Z_{t - j}$ is our MA($\infty$) process. \
+We are given that $Z_{t} \sim WN(0, \sigma^{2})$, so we proceed accordingly to derive:
+\begin{align*}
+Var(X_{t}) &= Var(Z_{t} + (\phi + \theta) \cdot \sum_{j = 1}^{\infty} \phi^{j - 1} \cdot Z_{t - j}) \\
+&= Var(Z_{t}) + (\phi + \theta)^{2} \cdot \sum_{j = 1}^{\infty} (\phi^{j - 1})^{2} \cdot Var(Z_{t - j}) \\
+&= \sigma^{2} + (\phi + \theta)^{2} \cdot \sum_{j = 1}^{\infty} (\phi^{2})^{j} \cdot \sigma^{2} \\
+&= \sigma^{2} \cdot (1 + \frac{(\phi + \theta)^{2}}{1 - \phi^{2}})
+\end{align*}
+
+# Problem 3
+
+### (a)
+
+```{r}
+set.seed(16)
+
+phi = 0.9;
+theta = 0.7;
+n = 10;
+
+x <- arima.sim(n = n + 1, model = list(ar = phi, ma = theta));
+gamma <- ARMAacf(ar = phi, ma = theta, lag.max = n);
+Gamma <- toeplitz(gamma[1:n]);
+GamChol <- chol(Gamma);
+a <- solve( Gamma, gamma[2:(n + 1)]);
+pred <- a %*% rev(x[1:n]);
+
+plot(x); points(n + 1, pred)
+```
+
+###(b)
+
+```{r}
+set.seed(16)
+
+num = 10000;
+phi = 0.9;
+theta = 0.5;
+n = 10;
+
+gamma <- ARMAacf(ar = phi, ma = theta, lag.max = n);
+Gamma = toeplitz(gamma[1:n]);
+GamChol = chol(Gamma);
+a <- backsolve(GamChol, forwardsolve(GamChol, gamma[2:(n + 1)], transpose = TRUE, upper.tri = TRUE));
+
+rep <- rep(0, num);
+for( i in 1:num )
+{
+  x <- arima.sim(n = n + 1, model = list(ar = phi, ma = theta), sd = 1);
+  pred <- a %*% rev(x[1:n]);
+  rep[i] <- x[n + 1] - pred;
+}
+x;
+plot(x); points(n + 1, pred);
+
+hist(rep);
+m = mean(rep); m
+s = var(rep); s
+```
+
+##### Not sure what to expect, though the estimate seem to be unbiased.
+
+### (c)
+
+```{r}
+gam <- 1 + (phi + theta)^2/(1 - phi^2);
+seg2 = gam * (gamma[1] - a %*% gamma[2:(n + 1)]); seg2
+```

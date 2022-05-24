@@ -1,0 +1,223 @@
+---
+title: '[STAT 4540] Project'
+author: "Michael Ghattas"
+date: "4/27/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+install.packages("EIAdata")
+install.packages("forecast")
+library(EIAdata)
+library(lubridate)
+library(xts)
+library(ggplot2)
+library(forecast)
+```
+
+```{r}
+library(timeDate)
+library(lubridate)
+
+df <- read.csv("/Users/Home/Documents/Michael_Ghattas/School/CU_Boulder/BA-BS/2022/Spring 2022/STAT - 4540/Project/Demand_for_Public_Service_Company_of_Colorado_(PSCO)_hourly_-_local_time.csv", sep = ",", skip = "4")
+df[, 1]  <- as.POSIXct(df[, 1], tz="", format = "%m/%d/%y %R %z")
+colnames(df) <- c('date', 'demand')
+df$date <- format(as.POSIXct(df$date, format = "%m/%d/%y %R %z"), format = "%d-%m-%y")
+df$demand <- as.double(df$demand / 1000)
+#temp <- aggregate(demand ~ date, df, sum)
+#agr <- temp[order(as.Date(agrr$date, format = "%d-%m-%y")), ]
+#df <- agr
+#df <- data.frame(date = df$date, demand = df$demand)
+df
+dim(df)
+```
+
+
+```{r}
+df$date <- strptime(df$date, format = '%d-%m-%y')
+df$day <- as.factor(strftime(df$date, format = '%A'))
+df$yearday <- as.factor(strftime(df$date, format = '%m%d'))
+df
+str(df)
+```
+
+```{r}
+df_test <- subset(df, date >= strptime('01-01-19', format = '%d-%m-%y')); df_test
+df <- subset(df, date < strptime('01-01-19', format = '%d-%m-%y')); df
+ts <- ts(df$demand, frequency = 1)
+```
+
+```{r}
+demandts <- xts(df$demand, df$date)
+plot(demandts, main = 'Energy demand evolution', xlab = 'Date', ylab = 'Demand (GWh)')
+
+ggplot(df, aes(day, demand)) + geom_boxplot() + xlab('Day') + ylab('Demand (GWh)') + ggtitle('Demand per day of the week')
+
+avg_demand_per_yearday <- aggregate(demand ~ yearday, df, 'mean')
+# Computing the smooth curve for the time series. Data is replicated before computing the curve in order to achieve continuity
+smooth_yearday <- rbind(avg_demand_per_yearday, avg_demand_per_yearday, avg_demand_per_yearday, avg_demand_per_yearday, avg_demand_per_yearday)
+smooth_yearday <- lowess(smooth_yearday$demand, f = 1 / 45)
+l <- length(avg_demand_per_yearday$demand)
+l0 <- 2 * l + 1
+l1 <- 3 * l
+smooth_yearday <- smooth_yearday$y[l0:l1]
+# Plotting the result
+par(mfrow = c(1, 1))
+# Setting year to 2016 to allow existence of 29th February
+dates <- as.Date(paste(levels(df$yearday), '2016'), format = '%m%d%Y')
+plot(dates, avg_demand_per_yearday$demand, type = 'l', main = 'Average daily demand', xlab = 'Date', ylab = 'Demand (GWh)')
+lines(dates, smooth_yearday, col = 'blue', lwd = 2)
+```
+```{r}
+par(mfrow = c(1, 2))
+diff <- avg_demand_per_yearday$demand - smooth_yearday
+abs_diff <- abs(diff)
+barplot(diff[order(-abs_diff)], main = 'Smoothing error', ylab = 'Error')
+boxplot(diff, main = 'Smoothing error', ylab = 'Error')
+```
+
+```{r}
+head(strftime(dates[order(-abs_diff)], format = '%B %d'), 33)
+
+par(mfrow = c(2, 2))
+acf(df$demand, 10, na.action = na.pass, main = 'Autocorrelation')
+acf(df$demand, 1500, na.action = na.pass, main = 'Autocorrelation')
+pacf(df$demand, 100, na.action = na.pass, main = 'Partial autocorrelation')
+pacf(df$demand, 1500, na.action = na.pass, main = 'Partial autocorrelation')
+```
+
+```{r}
+library(zoo)
+    
+wts <- ts(ts, frequency = 7)
+wts <- na.locf(wts)
+dec_wts <- decompose(wts)
+plot(dec_wts)
+
+df$demand_mws <- df$demand - as.numeric(dec_wts$season)
+yts <- ts(subset(df, yearday != '0229')$demand_mws, frequency = 365)
+yts <- na.locf(yts)
+dec_yts <- decompose(yts)
+plot(dec_yts)
+
+days365 <- which(df$yearday != '0229')
+february29ths <- which(df$yearday == '0229')
+df$demand_mwys[days365] <- df$demand_mws[days365] - as.numeric(dec_yts$season)
+# Fill values on February 29th
+df$demand_mwys[february29ths] <- df$demand_mws[february29ths]
+par(mfrow = c(1, 1))
+ts_mwys <- ts(df$demand_mwys, frequency = 1)
+demandts_mwys <- xts(df$demand_mwys, df$date)
+plot(demandts_mwys, main = 'Energy demand minus seasonal data', xlab = 'Date', ylab = 'Demand (GWh)')
+```
+
+```{r}
+# Aggregating demand by day of the year (average)
+avg_demand_mwys_per_yearday <- aggregate(demand_mwys ~ yearday, df, 'mean')
+
+# Computing the smooth curve for the time series. Data is replicated before computing the curve in order to achieve continuity
+smooth_yearday <- rbind(avg_demand_mwys_per_yearday, avg_demand_mwys_per_yearday, avg_demand_mwys_per_yearday, avg_demand_mwys_per_yearday, avg_demand_mwys_per_yearday)
+smooth_yearday <- lowess(smooth_yearday$demand_mwys, f = 1 / 45)
+l <- length(avg_demand_mwys_per_yearday$demand_mwys)
+l0 <- 2 * l + 1
+l1 <- 3 * l
+smooth_yearday <- smooth_yearday$y[l0:l1]
+
+# Plotting the result
+par(mfrow = c(1, 1))
+# Setting year to 2016 to allow existence of 29th February
+dates <- as.Date(paste(levels(df$yearday), '2016'), format = '%m%d%Y')
+plot(dates, avg_demand_mwys_per_yearday$demand_mwys, type = 'l', main = 'Average daily demand', xlab = 'Date', ylab = 'Demand (GWh)')
+lines(dates, smooth_yearday, col = 'blue', lwd = 2)
+```
+```{r}
+par(mfrow = c(1, 2))
+diff <- avg_demand_mwys_per_yearday$demand_mwys - smooth_yearday
+abs_diff <- abs(diff)
+barplot(diff[order(-abs_diff)], main = 'Smoothing error', ylab = 'Error')
+boxplot(diff, main = 'Smoothing error', ylab = 'Error')
+```
+
+```{r}
+par(mfrow = c(1, 2))
+acf(df$demand_mwys, 100, na.action = na.pass, main = 'Autocorrelation')
+pacf(df$demand_mwys, 100, na.action = na.pass, main = 'Partial autocorrelation')
+```
+```{r}
+model <- Arima(ts, order = c(2, 1, 2), list(order = c(1, 1, 1), period = 7))
+
+auxts <- ts
+auxmodel <- model
+errs <- c()
+pred <- c()
+perc <- c()
+for (i in 1:nrow(df_test)) {
+  p <- as.numeric(predict(auxmodel, newdata = auxts, n.ahead = 1)$pred)
+  pred <- c(pred, p)
+  errs <- c(errs, p - df_test$demand[i])
+  perc <- c(perc, (p - df_test$demand[i]) / df_test$demand[i])
+  auxts <- ts(c(auxts, df_test$demand[i]), frequency = 7)
+  auxmodel <- Arima(auxts, model = auxmodel)
+}
+par(mfrow = c(1, 1))
+plot(errs, type = 'l', main = 'Error in the forecast')
+
+plot(pred, type = 'l', main = 'Real vs. forecast', col = 'red')
+lines(df_test$demand)
+legend('topright', c('Real', 'Forecast'), lty = 1, col = c('black', 'red'))
+
+abserr <- mean(abs(errs)); abserr
+percerr <- mean(abs(perc)) * 100; percerr
+```
+#```{r}
+#specialday <- function(day) {
+#  correction = 0
+#  if (format(day, '%m%d') %in% c('0101', '0501', '0106', '0815', '1012', '1101', '1206', '1208', '1224', '1225', '1226', '1231'))
+#      correction = -100
+#  else if (format(day, '%m%d') %in% c('0319'))
+#    correction = -50
+#  # On Sunday, do not apply correction
+#  if (as.factor(strftime(day, format = '%A')) == 'Sunday')
+#    return(0)
+#  return(correction)
+#}
+#
+#model <- Arima(ts, order = c(2, 1, 2), list(order = c(1, 1, 1), period = 7))
+#auxts <- ts
+#auxmodel <- model
+#errs <- c()
+#pred <- c()
+#perc <- c()
+#for (i in 1:nrow(df_test)) {
+#  p <- as.numeric(predict(auxmodel, newdata = auxts, n.ahead = 1)$pred)
+#  correction = specialday(df_test$date[i])
+#  pred <- c(pred, p + correction)
+#  errs <- c(errs, p + correction - df_test$demand[i])
+#  perc <- c(perc, (p + correction - df_test$demand[i]) / df_test$demand[i])
+#  if (!correction)
+#    auxts <- ts(c(auxts, df_test$demand[i]), frequency = 7)
+#  else
+#    auxts <- ts(c(auxts, p), frequency = 7)
+#  auxmodel <- Arima(auxts, model = auxmodel)
+#}
+#par(mfrow = c(1, 1))
+#plot(errs, type = 'l', main = 'Error in the forecast')
+#
+#plot(pred, type = 'l', main = 'Real vs. forecast', col = 'red')
+#lines(df_test$demand)
+#legend('topright', c('Real', 'Forecast'), lty = 1, col = c('black', 'red'))
+#
+#abserr <- mean(abs(errs)); abserr
+#percerr <- mean(abs(perc)) * 100; percerr
+#```
+
+```{r}
+plot(forecast(Arima(tail(ts, 200), model = model)))
+forc <- forecast(Arima(tail(ts, 200), model = model))
+forc
+```
+

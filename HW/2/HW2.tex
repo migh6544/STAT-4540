@@ -1,0 +1,221 @@
+\RequirePackage[l2tabu, orthodox]{nag}	% tells out-of-date packages
+\documentclass[10pt, letterpaper]{scrartcl}
+
+\usepackage{amssymb,amsfonts}
+\usepackage[cmex10]{amsmath}
+\usepackage[usenames,dvipsnames,svgnames]{xcolor} % use like \textcolor{red}{..} or {\color{red} ...}
+\usepackage{graphicx}
+\usepackage[margin=1in]{geometry}% can also add 'nohead', or leave blank
+
+\usepackage{pgf,tikz}
+\usepackage{mathrsfs}
+\usetikzlibrary{arrows}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern} % important!
+
+\usepackage{hyperref}
+\hypersetup{pdfauthor={Stephen Becker},
+    pdftitle={},
+    colorlinks=true,
+    citecolor=MidnightBlue,
+    urlcolor=Bittersweet,
+}
+\let\oldenumerate\enumerate
+\renewcommand{\enumerate}{
+  \oldenumerate
+  \setlength{\itemsep}{1em}
+  \setlength{\parskip}{1em}
+  \setlength{\parsep}{0pt}
+}
+\usepackage[shortlabels]{enumitem} % allows shorthand notation for labels
+%\setlist{noitemsep}
+% See http://mirrors.fe.up.pt/pub/CTAN/macros/latex/contrib/enumitem/enumitem.pdf
+% and now, set par indent to zero
+\newlength{\savedparindent}
+\setlength{\savedparindent}{\parindent}
+\setlist[enumerate]{listparindent=\savedparindent}
+%\setlength{\parindent}{0pt} % Jan 2017, HW 3/4, comment this out.
+
+\usepackage{xspace}
+
+\usepackage{listings}
+
+% My solution environment
+\makeatletter
+\newcommand\solParagraph{\@startsection{paragraph}{4}{\z@}%
+    {-.55ex \@plus -1ex \@minus -0.2ex}%
+    {0.01pt}%
+    {\raggedsection\normalfont\sectfont\nobreak\size@paragraph}%
+}
+\makeatother
+\newenvironment{solution}{\setlength{\parindent}{\savedparindent}\solParagraph{Solution:}}{}
+
+\newenvironment{instructions}{}{}
+\newenvironment{SolnComment}{}{}
+\usepackage{comment} 
+
+% EDIT THIS TO ENABLE SOLUTIONS:
+%\def\solutions{1}  % define solutions  % !!! COMMENT or UNCOMMENT THIS LINE
+
+% NOTE: \begin{solution} should have NO SPACES BEFORE OR AFTER IT,
+% 	Can give very weird errors, hiding text, etc. See http://tex.stackexchange.com/a/91431/4603
+\ifdefined\solutions
+    \newcommand{\solTitle}[1]{#1}
+    \excludecomment{instructions}
+    \usepackage{draftwatermark}
+\SetWatermarkText{\textcopyright 2022 Stephen Becker}
+\SetWatermarkScale{0.5}    \SetWatermarkLightness{0.920}
+\else
+   \excludecomment{solution}% uncomment this line to hide solution
+   \newcommand{\solTitle}[1]{}
+   \excludecomment{SolnComment}
+\fi
+
+
+% -- Macros --
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\real}{\R} % synonym
+\newcommand{\N}{{\mathbb{N}}}  % for natural numbers {0,1,2,3,...}
+\newcommand{\cN}{{\mathcal{N}}}  % ``c'' for caligraphic; use for Normal random variables
+\newcommand{\integers}{\mathbb{Z}}
+\newcommand{\defeq}{\stackrel{\text{\tiny def}}{=}}  
+\newcommand{\<}{\langle}  % for inner products
+\renewcommand{\>}{\rangle}% for inner products
+\renewcommand{\vec}[1]{{\boldsymbol{#1}}} % to indicate something is a vector
+% -- for time series and other prob/stat --
+\newcommand{\WN}{\text{WN}}
+\newcommand{\cov}{\text{Cov}}
+\newcommand{\Cov}{\cov} % synonym
+\newcommand{\var}{\text{Var}}
+\newcommand{\Var}{\var} % synonym
+\newcommand{\E}{\operatorname{\mathbb{E}}}
+%\newcommand{\prob}{\operatorname{\mathbb{P}}}  % for probability
+\newcommand{\prob}{\text{P}}  % for probability
+\newcommand{\Prob}{\prob} % synonym for \prob
+
+\newcommand{\RR}{\texttt{R}\xspace}
+
+
+\title{Homework 2 \solTitle{Selected Solutions} \\MATH/STAT 4540/5540 Spr 2022 Time Series}
+\date{}
+\begin{document}
+\maketitle
+\vspace{-6em}
+\textbf{\sffamily Due date}: Friday, Feb 11, before midnight, on Canvas/Gradescope
+\hfill \textbf{\sffamily Instructor}: Prof.\ Becker
+
+\textbf{\sffamily Theme}: Basic ARMA processes.
+
+\begin{SolnComment}
+    \hfill {\em \small    solutions version 2/2/2022}
+\end{SolnComment}
+
+\begin{instructions} % Normal indents inside this environment
+\paragraph{Instructions} 
+Collaboration with your fellow students is OK and in fact recommended, although direct copying is not allowed. The internet is allowed for basic tasks (e.g., looking up definitions on wikipedia) but it is not permissible to search for proofs or to \emph{post} requests for help on forums such as \texttt{http://math.stackexchange.com/} or to look at solution manuals. Please write down the names of the students that you worked with.
+
+An arbitrary subset of these questions will be graded.
+\vspace{-1em}
+\paragraph{Reading} 
+You are responsible for chapters 2.1--2.3 and 3.1 in our textbook (Brockwell and Davis, ``Intro to Time Series and Forecasting'', 3rd ed).
+\end{instructions}
+
+
+\begin{enumerate}[align=left, leftmargin=*, label=\sffamily\bfseries Problem \arabic*:]    
+
+\item Let $\{ \widetilde Z_t \} \sim \WN(0,\widetilde \sigma^2)$ and let $\{X_t\}$ satisfy the equation
+\[
+X_t + \frac54 X_{t-1} = \frac12 \tilde Z_t + \frac34 \widetilde Z_{t-1}.
+\]
+{\em Hint: Is this an ARMA(1,1) process? Or if it isn't, can you make it into one?}
+\begin{enumerate}
+\item Does there exist a stationary solution $\{X_t\}$?  If so, is it unique? Explain how you reached your conclusion.
+\item Is this a causal process? Explain how you reached your conclusion.
+\item Is this an invertible process? Explain how you reached your conclusion.
+\item Represent $X_t$ in terms of $\{\widetilde Z_t\}$, i.e., an explicit equation for $X_t$ in terms of $\widetilde Z_t$.
+\end{enumerate}
+
+
+\item The \textbf{linear filter} associated with a sequence of real numbers $(a_j)_{j\in J}$ is the operator $\sum_{j\in J} a_jB^j$, where $B$ is the back shift operator. (Here, $B^j$ with $j<0$ is interpreted as a forward shift. For example, $B^{-3}x_t=x_{t+3}$.) The set of indices $J$ may be finite or infinite; in the latter case we assume $\sum_{j\in J} |a_j| < \infty$.
+
+It is a fact that the linear filter associated with $(a_j)_{j\in J}$ \textbf{passes polynomials of degree $k$ without distortion} (i.e., $p_t=\sum_ja_jm_{t-j}$, for all polynomial $p_t$ of degree $k$) if and only if $\sum_{j\in J} a_j=1$, and $\sum_{j\in J} j^ra_j=0$ for $r=1,\ldots,k$.  For example, the sequence $(a_{-1},a_0,a_1) = (1,1,1)/3$ passes all linear functions without distortion; the sequence $(a_{-2},a_{-1},a_0,a_1,a_2)=(-1,4,3,4,-1)/9$ passes all polynomials of degree $3$ or less without distortion.
+
+This is a \textbf{conceptual question} so it is extra important that even if you are working with other students, you should try this problem on your own first before discussing it with others.
+
+\begin{enumerate}
+\item If you are given a dataset $(x_t)_{t=1}^n$, how would you use a filter like $(a_{-2},a_{-1},a_0,a_1,a_2)=(-1,4,3,4,-1)/9$ to detrend the data?  That is, describe in a few sentences what the high-level procedure is. Specifically, which part is the estimate of the \emph{trend}: the  filtered data or the residual?
+
+\item Does the condition $\sum_{j\in J} a_j=1$ depend on how you index the filter $(a_j)$?  For example, if instead of defining $(a_{-1},a_0,a_1) = (1,1,1)/3$ we defined $(a_{1},a_2,a_3) = (1,1,1)/3$, would anything change?
+
+
+\item Repeat the previous question but this time considering the condition $\sum_{j\in J} j^ra_j=0$ for $r=1,\ldots,k$. Does this condition depend on our indexing choice?  Interpret your result (i.e., how would your output sequence change if you redefined $(a_{-1},a_0,a_1) = (-1,1,1)/3$ to be $(a_{1},a_2,a_3) = (1,1,1)/3$)?
+
+
+\end{enumerate}
+
+
+\item 
+The class website \href{https://github.com/stephenbeckr/time-series-class/tree/main/Data}{github.com/stephenbeckr/time-series-class/tree/main/Data} has a daily maximum temperature dataset for Melbourne, Australia 
+during the years 1985-1987 \\
+(\texttt{DailyMaxMelbourne19851987.RData} 
+or, if you're using Python or something other than \RR, use \texttt{DailyMaxMelbourne19851987.csv}).  To actually download it from github, there's either a ``Download'' or ``Raw'' button that will let you save the raw file to your computer.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=.75\linewidth]{figs/HW2plot_v2.pdf}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{enumerate}
+  \item
+    Plot the time series for the full three year period, using a suitable format. You should label the plot and include information about the x- and y-axes, i.e., your plot should look similar to the plot above!
+    
+    Note: \RR likes dates that are in the ``date'' format. You can covert a string like \verb@'1/1/85'@ to the date format using \texttt{as.Date}, e.g.,  \verb@as.Date('1/1/85',format="%m/%d/%y")@
+    
+  \item
+    Apply a suitable variant of the classical decomposition algorithm for 
+    seasonal models with trend {\em(any method we've talked about in class is valid)}.  Estimate and plot the trend component, the seasonal component and the random component (i.e., the residuals);
+    or for a method that estimates the seasonal and trend components together, you may plot those combined.  Present 
+    the results graphically, and discuss (e.g., do you think the decomposition worked well?)
+
+
+  \item
+    Compute and plot the sample autocovariance function of the estimated random 
+    component.  Can the residuals from your decomposition plausibly be modeled as 
+    white noise?  If not, what model might be appropriate?
+    
+
+  \item
+    Repeat steps (a)-(c) for the monthly averages (i.e., produce 3 plots), and write a few sentences comparing to your results for 
+    the daily data.
+    
+    {\em Hint:} There are many ways to do compute the monthly average. You can create a filter by hand, or write a \verb@for@ loop, or use 
+    \verb@aggregate@ if you package the data as a \href{https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/data.frame}{\texttt{data.frame}} object, or use \verb@as_period@ if you package the data as a \href{https://www.rdocumentation.org/packages/tibbletime/versions/0.1.6/topics/as_tbl_time}{\texttt{tbl\_time}} object, etc.  Any method is valid as long as you get the correct output (in fact, you don't even have to use \RR).
+    
+    
+\end{enumerate}
+
+\item 
+Let $\{X_t\}$ be a stationary process with mean zero and ACVF $\gamma_X(h)$, 
+and let $a$ and $b$ be constants.  Let 
+\[
+  Y_t = a + bt + s(t) + X_t
+\]
+where $s(t)$ is a seasonal component with period 12.  Define 
+\[
+Z_t = (1-B)(1-B^{12})Y_t.
+\]
+{\em Hint for this problem: use results from section 2.2 ``Linear Processes'' in our Brockwell and Davis textbook.}
+\begin{enumerate}
+\item Show that $\{Z_t\}$ is stationary.
+
+\item (\textbf{\sffamily Graduate students only}) Find the autocovariance function $\gamma_Z$ in terms of $\gamma_X$ (you may leave this unsimplified), then find a more explicit form for $\gamma_Z(1)$ assuming $\{X_t\}$ is a MA(1) process with parameter $\theta=\frac12$ and $\sigma^2=1$ (i.e., for the second part of this problem, your answer should be a number).
+\end{enumerate}
+
+\end{enumerate}
+\end{document}

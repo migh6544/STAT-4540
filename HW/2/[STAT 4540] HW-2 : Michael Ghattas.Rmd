@@ -1,0 +1,207 @@
+---
+title: '[STAT 4540] HW-2'
+author: "Michael Ghattas"
+date: "2/9/2022"
+output:
+  pdf_document: default
+  html_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+r = getOption("repos")
+r["CRAN"] = "http://cran.us.r-project.org"
+options(repos = r)
+update.packages(ask = FALSE, checkBuilt = TRUE)
+options(repos = list(CRAN="http://cran.rstudio.com/"))
+options(tinytex.verbose = TRUE)
+```
+
+# Problem 1
+
+
+$X_{t} + \frac{5}{4} X_{t - 1} = \frac{1}{2} \tilde{Z}_{t} + \frac{3}{4} \tilde{Z}_{t - 1}$ \
+
+let $Z_{t} = \frac{1}{2} \tilde{Z}_{t}$ \
+
+$\tilde{Z}_{t} \sim wn(0, \sigma^2) \to Z_{t} \sim wn(0, \frac{1}{4} \sigma^2)$ \
+
+
+$\to \frac{1}{2} \tilde{Z}_{t} + \frac{3}{4} \tilde{Z}_{t - 1} = Z_{t} + \frac{\frac{3}{4}}{2} Z_{t - 1} = Z_{t} + \frac{3}{8} Z_{t - 1}$ \
+
+$\to X_{t} + \frac{5}{4} X_{t - 1} = Z_{t} + \frac{3}{8} Z_{t - 1}$ \
+
+
+Let $\frac{5}{4} X_{t - 1} = -(-\frac{5}{4}) X_{t - 1}$ \
+
+$\to X_{t} - (-\frac{5}{4}) X_{t - 1} = Z_{t} + \frac{3}{8} Z_{t - 1}$ \
+
+
+
+### (a)
+
+Given the below points, we can conclude that there exists a unique and stationary solution for $\{X_{t}\}$: \
+
+
+1. $X_{t} - (-\frac{5}{4}) X_{t - 1} = Z_{t} + \frac{3}{8} Z_{t - 1}$ \
+
+2. $\phi = -\frac{5}{4}$ and $\theta = \frac{3}{8} \to \phi + \theta = \frac{3}{8} - \frac{5}{4} = \frac{3 - 10}{8} = -\frac{7}{8} \neq 0$ \
+
+3. $\phi = -\frac{5}{4} \to |\phi| \neq 1$ \
+
+
+
+### (b)
+
+Given that $\phi = -\frac{5}{4} \to |\phi| > 1$, thus the process is non-causal. \
+
+
+
+### (c)
+
+Given that $\theta = \frac{3}{8} \to |\theta| < 1$, thus the process is invertible. \
+
+
+
+### (d)
+
+$X_{t} - (-\frac{5}{4}) X_{t - 1} = Z_{t} + \frac{3}{8} Z_{t - 1}$ \
+
+
+\begin{align*}
+X_{t} &= - (\frac{\frac{3}{8}}{-\frac{5}{4}}) Z_{t} - (\frac{3}{8} + (- \frac{5}{4})) \sum_{j = 0}^{1} \frac{1}{\phi^{j + 1}} Z_{t + j} \\
+&= - (- \frac{40}{12}) Z_{t} - (\frac{3}{8} - \frac{5}{4}) \sum_{j = 0}^{1} \frac{1}{(\frac{5}{4})^{j + 1}} Z_{t + j} \\
+&= \frac{40}{12} Z_{t} - (\frac{3 - 10}{8}) \cdot (\frac{Z_{t + 0}}{(\frac{5}{4})^{0 + 1}} + \frac{Z_{t + 1}}{(\frac{5}{4})^{1 + 1}}) \\
+&= \frac{10}{3} Z_{t} - (-\frac{7}{8}) \cdot (\frac{Z_{t}}{(\frac{5}{4})^{1}} + \frac{Z_{t + 1}}{(\frac{5}{4})^{2}}) \\
+&= \frac{10}{3} Z_{t} + \frac{7}{8}  \cdot (\frac{Z_{t}}{\frac{5}{4}} + \frac{Z_{t + 1}}{\frac{25}{26}}) \\
+&= \frac{10}{3} Z_{t} + \frac{7}{8}  \cdot (\frac{4}{5} Z_{t} + \frac{25}{16} Z_{t + 1}) \\
+&= \frac{10}{3} Z_{t} + \frac{28}{40} Z_{t} + \frac{175}{128} Z_{t + 1} \\
+&= (\frac{100 + 21}{30}) Z_{t} + \frac{175}{128} Z_{t + 1} \\
+&= \frac{121}{30} Z_{t} + \frac{175}{128} Z_{t + 1} \\
+&= \frac{121}{30} \cdot (\frac{1}{2} \tilde{Z}_{t}) + \frac{175}{128} \cdot (\frac{1}{2} \tilde{Z}_{t + 1}) \\
+&= \frac{121}{60} \tilde{Z}_{t} + \frac{175}{256} \tilde{Z}_{t + 1} \\
+\end{align*}
+
+
+Thus: $X_{t} = \frac{121}{60} \tilde{Z}_{t} + \frac{175}{256} \tilde{Z}_{t + 1}$. \
+
+
+
+
+# Problem 2
+
+
+
+### (a)
+
+The big picture is filtering the estimated trend from the data through filtering out until we are left with nothing but residuals that are stationary. \
+
+
+
+### (b)
+
+No, the shift by re-indexing should have not affect any significant change. \
+
+
+
+### (c)
+
+The condition should not depend on the indexing choice, however the output would change if we redefined the indexing sequence. \
+
+
+
+
+# Problem 3
+
+
+
+
+### (a)
+
+
+```{r}
+library(lubridate)
+library(gridExtra)
+library(ggplot2)
+library(dplyr)
+
+data <- load("/Users/Home/Documents/Michael_Ghattas/School/CU_Boulder/2022/Spring 2022/STAT - 4540/HW/2/DailyMaxMelbourne19851987.RData")
+dates = as.Date(dates,format = "%m/%d/%y")
+df = data.frame(dates, temp)
+plot(dates, temp, xlab = "Date", ylab = "Degrees Celsius", main = "Daily max temperature in Melbourne", pch = 01, cex = 0.5)
+```
+
+
+
+### (b)
+
+
+```{r}
+df.ts <- ts(data = df$temp, start = c(1985, 1), end = c(1987, 365), frequency = 365)
+out <- decompose(df.ts, type = "additive")
+plot(out)
+```
+
+We can see that the decomposition did not work well, as the results are to noisy. An appropriate filter is needed prior to the decompose function. \
+
+
+
+### (c)
+
+
+```{r}
+acf(out$random, na.action = na.pass)
+acf(out$random, na.action = na.pass, lag.max = 500)
+```
+
+The results present moderate correlation, thus further filtering is needed to be able to identify white noise. A low-degree polynomial based regression model might be helpful. \
+
+
+
+### (d)
+
+
+```{r}
+df$year <- year(df$dates)
+df$month <- month(df$dates)
+
+avgtemp <- aggregate(temp ~ year + month, df, mean)
+avgtemp$date = as.Date(paste(avgtemp$year, avgtemp$month, 01), "%y %m %d")
+avgtemp = arrange(avgtemp, date)
+
+avgtemp.ts <- ts(data = avgtemp$temp, start = c(1985, 1), end = c(1987, 12), frequency = 12)
+avgtemp.out <- decompose(df.ts, type = "additive")
+
+plot(df$month, temp, xlab = "Month", ylab = "Degrees Celsius", main = "Average Monthly Temp", pch = 01, cex = 0.5)
+plot(avgtemp.out)
+
+acf(avgtemp.out$random, na.action = na.pass)
+```
+
+
+From the data we can see a correlation between the month and average temperature. We can also see a relationship between the the average temperature of each month in relation to the previous month. Additional filtering is needed to extract trends, seasonality and noise. \
+
+
+
+# Problem 4
+
+
+### (a)
+
+
+\begin{align*}
+Z_{t} &= (1 - B)(1 - B^{12})Y_{t} \\
+&= (1 - B - B^{12} + B^{13})Y_{t} \\
+&= Y_{t} - Y_{t - 1} - Y_{t - 12} + Y_{t - 13} \\
+&= (Y_{t} - Y_{t - 12}) - (Y_{t - 1} - Y_{t - 13}) \\
+&= (a + bt + s_{t} + X_{t} - a - b(t - 12) - s_{t - 12} - X_{t - 12}) - (a + b(t - 1) + s_{t - 1} + X_{t - 1} - a - b(t - 13) - s_{t - 13} - X_{t - 13}) \\
+&= (bt + X_{t} - b(t - 12) - X_{t - 12}) - (b(t - 1) + X_{t - 1} - b(t - 13) - X_{t - 13}) \\
+&= (X_{t} - X_{t - 12} + 12b) - (X_{t - 1} - X_{t - 13} + 13b) \\
+&= X_{t} - X_{t - 12} + 12b - X_{t - 1} + X_{t - 13} - 13b) \\
+&= X_{t} - X_{t - 1} - X_{t - 12} + X_{t - 13} - b \\
+&= X_{t} - X_{t - 1} - X_{t - 12} + X_{t - 13} \\
+\end{align*}
+
+
+Thus: $Z_{t} = X_{t} - X_{t - 1} - X_{t - 12} + X_{t - 13}$ satisfies an AR(p) stationary process. \

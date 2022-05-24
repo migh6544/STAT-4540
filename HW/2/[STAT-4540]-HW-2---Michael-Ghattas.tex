@@ -1,0 +1,376 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{ifxetex,ifluatex}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  pdftitle={{[}STAT 4540{]} HW-2},
+  pdfauthor={Michael Ghattas},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifluatex
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+
+\title{{[}STAT 4540{]} HW-2}
+\author{Michael Ghattas}
+\date{2/9/2022}
+
+\begin{document}
+\maketitle
+
+\hypertarget{problem-1}{%
+\section{Problem 1}\label{problem-1}}
+
+\(X_{t} + \frac{5}{4} X_{t - 1} = \frac{1}{2} \tilde{Z}_{t} + \frac{3}{4} \tilde{Z}_{t - 1}\)\\
+
+let \(Z_{t} = \frac{1}{2} \tilde{Z}_{t}\)\\
+
+\(\tilde{Z}_{t} \sim wn(0, \sigma^2) \to Z_{t} \sim wn(0, \frac{1}{4} \sigma^2)\)\\
+
+\(\to \frac{1}{2} \tilde{Z}_{t} + \frac{3}{4} \tilde{Z}_{t - 1} = Z_{t} + \frac{\frac{3}{4}}{2} Z_{t - 1} = Z_{t} + \frac{3}{8} Z_{t - 1}\)\\
+
+\(\to X_{t} + \frac{5}{4} X_{t - 1} = Z_{t} + \frac{3}{8} Z_{t - 1}\)\\
+
+Let \(\frac{5}{4} X_{t - 1} = -(-\frac{5}{4}) X_{t - 1}\)\\
+
+\(\to X_{t} - (-\frac{5}{4}) X_{t - 1} = Z_{t} + \frac{3}{8} Z_{t - 1}\)\\
+
+\hypertarget{a}{%
+\subsubsection{(a)}\label{a}}
+
+Given the below points, we can conclude that there exists a unique and
+stationary solution for \(\{X_{t}\}\):\\
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  \(X_{t} - (-\frac{5}{4}) X_{t - 1} = Z_{t} + \frac{3}{8} Z_{t - 1}\)\\
+\item
+  \(\phi = -\frac{5}{4}\) and
+  \(\theta = \frac{3}{8} \to \phi + \theta = \frac{3}{8} - \frac{5}{4} = \frac{3 - 10}{8} = -\frac{7}{8} \neq 0\)\\
+\item
+  \(\phi = -\frac{5}{4} \to |\phi| \neq 1\)\\
+\end{enumerate}
+
+\hypertarget{b}{%
+\subsubsection{(b)}\label{b}}
+
+Given that \(\phi = -\frac{5}{4} \to |\phi| > 1\), thus the process is
+non-causal.\\
+
+\hypertarget{c}{%
+\subsubsection{(c)}\label{c}}
+
+Given that \(\theta = \frac{3}{8} \to |\theta| < 1\), thus the process
+is invertible.\\
+
+\hypertarget{d}{%
+\subsubsection{(d)}\label{d}}
+
+\(X_{t} - (-\frac{5}{4}) X_{t - 1} = Z_{t} + \frac{3}{8} Z_{t - 1}\)\\
+
+\begin{align*}
+X_{t} &= - (\frac{\frac{3}{8}}{-\frac{5}{4}}) Z_{t} - (\frac{3}{8} + (- \frac{5}{4})) \sum_{j = 0}^{1} \frac{1}{\phi^{j + 1}} Z_{t + j} \\
+&= - (- \frac{40}{12}) Z_{t} - (\frac{3}{8} - \frac{5}{4}) \sum_{j = 0}^{1} \frac{1}{(\frac{5}{4})^{j + 1}} Z_{t + j} \\
+&= \frac{40}{12} Z_{t} - (\frac{3 - 10}{8}) \cdot (\frac{Z_{t + 0}}{(\frac{5}{4})^{0 + 1}} + \frac{Z_{t + 1}}{(\frac{5}{4})^{1 + 1}}) \\
+&= \frac{10}{3} Z_{t} - (-\frac{7}{8}) \cdot (\frac{Z_{t}}{(\frac{5}{4})^{1}} + \frac{Z_{t + 1}}{(\frac{5}{4})^{2}}) \\
+&= \frac{10}{3} Z_{t} + \frac{7}{8}  \cdot (\frac{Z_{t}}{\frac{5}{4}} + \frac{Z_{t + 1}}{\frac{25}{26}}) \\
+&= \frac{10}{3} Z_{t} + \frac{7}{8}  \cdot (\frac{4}{5} Z_{t} + \frac{25}{16} Z_{t + 1}) \\
+&= \frac{10}{3} Z_{t} + \frac{28}{40} Z_{t} + \frac{175}{128} Z_{t + 1} \\
+&= (\frac{100 + 21}{30}) Z_{t} + \frac{175}{128} Z_{t + 1} \\
+&= \frac{121}{30} Z_{t} + \frac{175}{128} Z_{t + 1} \\
+&= \frac{121}{30} \cdot (\frac{1}{2} \tilde{Z}_{t}) + \frac{175}{128} \cdot (\frac{1}{2} \tilde{Z}_{t + 1}) \\
+&= \frac{121}{60} \tilde{Z}_{t} + \frac{175}{256} \tilde{Z}_{t + 1} \\
+\end{align*}
+
+Thus:
+\(X_{t} = \frac{121}{60} \tilde{Z}_{t} + \frac{175}{256} \tilde{Z}_{t + 1}\).\\
+
+\hypertarget{problem-2}{%
+\section{Problem 2}\label{problem-2}}
+
+\hypertarget{a-1}{%
+\subsubsection{(a)}\label{a-1}}
+
+The big picture is filtering the estimated trend from the data through
+filtering out until we are left with nothing but residuals that are
+stationary.\\
+
+\hypertarget{b-1}{%
+\subsubsection{(b)}\label{b-1}}
+
+No, the shift by re-indexing should have not affect any significant
+change.\\
+
+\hypertarget{c-1}{%
+\subsubsection{(c)}\label{c-1}}
+
+The condition should not depend on the indexing choice, however the
+output would change if we redefined the indexing sequence.\\
+
+\hypertarget{problem-3}{%
+\section{Problem 3}\label{problem-3}}
+
+\hypertarget{a-2}{%
+\subsubsection{(a)}\label{a-2}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(lubridate)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Attaching package: 'lubridate'
+\end{verbatim}
+
+\begin{verbatim}
+## The following objects are masked from 'package:base':
+## 
+##     date, intersect, setdiff, union
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(gridExtra)}
+\FunctionTok{library}\NormalTok{(ggplot2)}
+\FunctionTok{library}\NormalTok{(dplyr)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: package 'dplyr' was built under R version 4.1.2
+\end{verbatim}
+
+\begin{verbatim}
+## 
+## Attaching package: 'dplyr'
+\end{verbatim}
+
+\begin{verbatim}
+## The following object is masked from 'package:gridExtra':
+## 
+##     combine
+\end{verbatim}
+
+\begin{verbatim}
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+\end{verbatim}
+
+\begin{verbatim}
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{data }\OtherTok{\textless{}{-}} \FunctionTok{load}\NormalTok{(}\StringTok{"/Users/Home/Documents/Michael\_Ghattas/School/CU\_Boulder/2022/Spring 2022/STAT {-} 4540/HW/2/DailyMaxMelbourne19851987.RData"}\NormalTok{)}
+\NormalTok{dates }\OtherTok{=} \FunctionTok{as.Date}\NormalTok{(dates,}\AttributeTok{format =} \StringTok{"\%m/\%d/\%y"}\NormalTok{)}
+\NormalTok{df }\OtherTok{=} \FunctionTok{data.frame}\NormalTok{(dates, temp)}
+\FunctionTok{plot}\NormalTok{(dates, temp, }\AttributeTok{xlab =} \StringTok{"Date"}\NormalTok{, }\AttributeTok{ylab =} \StringTok{"Degrees Celsius"}\NormalTok{, }\AttributeTok{main =} \StringTok{"Daily max temperature in Melbourne"}\NormalTok{, }\AttributeTok{pch =} \DecValTok{01}\NormalTok{, }\AttributeTok{cex =} \FloatTok{0.5}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{{[}STAT-4540{]}-HW-2---Michael-Ghattas_files/figure-latex/unnamed-chunk-1-1.pdf}
+
+\hypertarget{b-2}{%
+\subsubsection{(b)}\label{b-2}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df.ts }\OtherTok{\textless{}{-}} \FunctionTok{ts}\NormalTok{(}\AttributeTok{data =}\NormalTok{ df}\SpecialCharTok{$}\NormalTok{temp, }\AttributeTok{start =} \FunctionTok{c}\NormalTok{(}\DecValTok{1985}\NormalTok{, }\DecValTok{1}\NormalTok{), }\AttributeTok{end =} \FunctionTok{c}\NormalTok{(}\DecValTok{1987}\NormalTok{, }\DecValTok{365}\NormalTok{), }\AttributeTok{frequency =} \DecValTok{365}\NormalTok{)}
+\NormalTok{out }\OtherTok{\textless{}{-}} \FunctionTok{decompose}\NormalTok{(df.ts, }\AttributeTok{type =} \StringTok{"additive"}\NormalTok{)}
+\FunctionTok{plot}\NormalTok{(out)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{{[}STAT-4540{]}-HW-2---Michael-Ghattas_files/figure-latex/unnamed-chunk-2-1.pdf}
+
+We can see that the decomposition did not work well, as the results are
+to noisy. An appropriate filter is needed prior to the decompose
+function.\\
+
+\hypertarget{c-2}{%
+\subsubsection{(c)}\label{c-2}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{acf}\NormalTok{(out}\SpecialCharTok{$}\NormalTok{random, }\AttributeTok{na.action =}\NormalTok{ na.pass)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{{[}STAT-4540{]}-HW-2---Michael-Ghattas_files/figure-latex/unnamed-chunk-3-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{acf}\NormalTok{(out}\SpecialCharTok{$}\NormalTok{random, }\AttributeTok{na.action =}\NormalTok{ na.pass, }\AttributeTok{lag.max =} \DecValTok{500}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{{[}STAT-4540{]}-HW-2---Michael-Ghattas_files/figure-latex/unnamed-chunk-3-2.pdf}
+
+The results present moderate correlation, thus further filtering is
+needed to be able to identify white noise. A low-degree polynomial based
+regression model might be helpful.\\
+
+\hypertarget{d-1}{%
+\subsubsection{(d)}\label{d-1}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df}\SpecialCharTok{$}\NormalTok{year }\OtherTok{\textless{}{-}} \FunctionTok{year}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{dates)}
+\NormalTok{df}\SpecialCharTok{$}\NormalTok{month }\OtherTok{\textless{}{-}} \FunctionTok{month}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{dates)}
+
+\NormalTok{avgtemp }\OtherTok{\textless{}{-}} \FunctionTok{aggregate}\NormalTok{(temp }\SpecialCharTok{\textasciitilde{}}\NormalTok{ year }\SpecialCharTok{+}\NormalTok{ month, df, mean)}
+\NormalTok{avgtemp}\SpecialCharTok{$}\NormalTok{date }\OtherTok{=} \FunctionTok{as.Date}\NormalTok{(}\FunctionTok{paste}\NormalTok{(avgtemp}\SpecialCharTok{$}\NormalTok{year, avgtemp}\SpecialCharTok{$}\NormalTok{month, }\DecValTok{01}\NormalTok{), }\StringTok{"\%y \%m \%d"}\NormalTok{)}
+\NormalTok{avgtemp }\OtherTok{=} \FunctionTok{arrange}\NormalTok{(avgtemp, date)}
+
+\NormalTok{avgtemp.ts }\OtherTok{\textless{}{-}} \FunctionTok{ts}\NormalTok{(}\AttributeTok{data =}\NormalTok{ avgtemp}\SpecialCharTok{$}\NormalTok{temp, }\AttributeTok{start =} \FunctionTok{c}\NormalTok{(}\DecValTok{1985}\NormalTok{, }\DecValTok{1}\NormalTok{), }\AttributeTok{end =} \FunctionTok{c}\NormalTok{(}\DecValTok{1987}\NormalTok{, }\DecValTok{12}\NormalTok{), }\AttributeTok{frequency =} \DecValTok{12}\NormalTok{)}
+\NormalTok{avgtemp.out }\OtherTok{\textless{}{-}} \FunctionTok{decompose}\NormalTok{(df.ts, }\AttributeTok{type =} \StringTok{"additive"}\NormalTok{)}
+
+\FunctionTok{plot}\NormalTok{(df}\SpecialCharTok{$}\NormalTok{month, temp, }\AttributeTok{xlab =} \StringTok{"Month"}\NormalTok{, }\AttributeTok{ylab =} \StringTok{"Degrees Celsius"}\NormalTok{, }\AttributeTok{main =} \StringTok{"Average Monthly Temp"}\NormalTok{, }\AttributeTok{pch =} \DecValTok{01}\NormalTok{, }\AttributeTok{cex =} \FloatTok{0.5}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{{[}STAT-4540{]}-HW-2---Michael-Ghattas_files/figure-latex/unnamed-chunk-4-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{plot}\NormalTok{(avgtemp.out)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{{[}STAT-4540{]}-HW-2---Michael-Ghattas_files/figure-latex/unnamed-chunk-4-2.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{acf}\NormalTok{(avgtemp.out}\SpecialCharTok{$}\NormalTok{random, }\AttributeTok{na.action =}\NormalTok{ na.pass)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{{[}STAT-4540{]}-HW-2---Michael-Ghattas_files/figure-latex/unnamed-chunk-4-3.pdf}
+
+From the data we can see a correlation between the month and average
+temperature. We can also see a relationship between the the average
+temperature of each month in relation to the previous month. Additional
+filtering is needed to extract trends, seasonality and noise.\\
+
+\hypertarget{problem-4}{%
+\section{Problem 4}\label{problem-4}}
+
+\hypertarget{a-3}{%
+\subsubsection{(a)}\label{a-3}}
+
+\begin{align*}
+Z_{t} &= (1 - B)(1 - B^{12})Y_{t} \\
+&= (1 - B - B^{12} + B^{13})Y_{t} \\
+&= Y_{t} - Y_{t - 1} - Y_{t - 12} + Y_{t - 13} \\
+&= (Y_{t} - Y_{t - 12}) - (Y_{t - 1} - Y_{t - 13}) \\
+&= (a + bt + s_{t} + X_{t} - a - b(t - 12) - s_{t - 12} - X_{t - 12}) - (a + b(t - 1) + s_{t - 1} + X_{t - 1} - a - b(t - 13) - s_{t - 13} - X_{t - 13}) \\
+&= (bt + X_{t} - b(t - 12) - X_{t - 12}) - (b(t - 1) + X_{t - 1} - b(t - 13) - X_{t - 13}) \\
+&= (X_{t} - X_{t - 12} + 12b) - (X_{t - 1} - X_{t - 13} + 13b) \\
+&= X_{t} - X_{t - 12} + 12b - X_{t - 1} + X_{t - 13} - 13b) \\
+&= X_{t} - X_{t - 1} - X_{t - 12} + X_{t - 13} - b \\
+&= X_{t} - X_{t - 1} - X_{t - 12} + X_{t - 13} \\
+\end{align*}
+
+Thus: \(Z_{t} = X_{t} - X_{t - 1} - X_{t - 12} + X_{t - 13}\) satisfies
+an AR(p) stationary process.\\
+
+\end{document}
